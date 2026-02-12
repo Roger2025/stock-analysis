@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Macro Command Center | 總經戰情室</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --bg-dark: #0f111a;
+            --bg-panel: #1a1d2d;
+            --bg-card: #23273a;
+            --text-primary: #e4e7eb;
+            --text-secondary: #9aa5b1;
+            
+            /* 訊號色 */
+            --bullish: #00d1b2; /* 綠/青：多頭 */
+            --bearish: #ff3860; /* 紅：空頭 */
+            --neutral: #ffdd57; /* 黃：中性/警告 */
+            --accent: #3273dc;  /* 藍：資訊 */
+            
+            --glass: rgba(255, 255, 255, 0.05);
+            --border: rgba(255, 255, 255, 0.1);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-primary);
+            font-family: 'Noto Sans TC', sans-serif;
+            line-height: 1.6;
+        }
+
+        /* -------------------------------------
+           Utility Classes
+        ------------------------------------- */
+        .bull-text { color: var(--bullish); font-weight: bold; }
+        .bear-text { color: var(--bearish); font-weight: bold; }
+        .warn-text { color: var(--neutral); font-weight: bold; }
+        .mono { font-family: 'JetBrains Mono', monospace; }
+        .flex-center { display: flex; align-items: center; justify-content: center; }
+        .grid { display: grid; gap: 20px; }
+
+        /* -------------------------------------
+           Top Dashboard (HUD)
+        ------------------------------------- */
+        .hud-container {
+            background: linear-gradient(180deg, rgba(26,29,45,0.95) 0%, rgba(15,17,26,0.95) 100%);
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(10px);
+            padding: 15px 0;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+        }
+
+        .hud-inner {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .brand {
+            font-size: 1.5rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            letter-spacing: 1px;
+        }
+        .brand i { color: var(--accent); }
+
+        .market-summary {
+            display: flex;
+            gap: 20px;
+        }
+
+        .summary-item {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+        }
+        .summary-label { font-size: 0.75rem; color: var(--text-secondary); text-transform: uppercase; }
+        .summary-val { font-size: 1.1rem; font-weight: 700; font-family: 'JetBrains Mono'; }
+
+        /* -------------------------------------
+           Main Layout
+        ------------------------------------- */
+        .container {
+            max-width: 1200px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+
+        .section-title {
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+            border-left: 5px solid var(--accent);
+            padding-left: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* -------------------------------------
+           Indicator Cards
+        ------------------------------------- */
+        .cards-grid {
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            margin-bottom: 50px;
+        }
+
+        .card {
+            background: var(--bg-card);
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            border-color: var(--accent);
+        }
+
+        /* 卡片圖片區 */
+        .card-img-box {
+            height: 140px;
+            position: relative;
+            background-size: cover;
+            background-position: center;
+        }
+        .card-img-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to bottom, rgba(35,39,58,0) 0%, var(--bg-card) 100%);
+        }
+        .card-icon {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: rgba(0,0,0,0.6);
+            padding: 8px;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(4px);
+            border: 1px solid var(--border);
+        }
+
+        .card-body { padding: 20px; }
+
+        .card-tag {
+            display: inline-block;
+            font-size: 0.75rem;
+            padding: 4px 8px;
+            border-radius: 4px;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+        .tag-lead { background: rgba(0, 209, 178, 0.15); color: var(--bullish); }
+        .tag-lag { background: rgba(255, 221, 87, 0.15); color: var(--neutral); }
+        .tag-risk { background: rgba(255, 56, 96, 0.15); color: var(--bearish); }
+        .tag-val { background: rgba(50, 115, 220, 0.15); color: var(--accent); }
+
+        .card h3 { font-size: 1.25rem; margin-bottom: 10px; }
+        .card p { color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 15px; }
+
+        /* 儀表條與分隔線 */
+        .meter-container {
+            background: rgba(255,255,255,0.1);
+            height: 8px;
+            border-radius: 4px;
+            margin: 15px 0;
+            overflow: hidden;
+            position: relative;
+        }
+        .meter-fill {
+            height: 100%;
+            border-radius: 4px;
+            position: relative;
+        }
+        .meter-marker {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: #fff;
+            opacity: 0.5;
+            z-index: 10;
+        }
+        .marker-text {
+            position: absolute;
+            top: -20px;
+            font-size: 0.7rem;
+            color: var(--text-secondary);
+            transform: translateX(-50%);
+        }
+
+        .action-box {
+            background: rgba(0,0,0,0.2);
+            padding: 12px;
+            border-radius: 8px;
+            border-left: 3px solid var(--accent);
+        }
+        .action-title { font-size: 0.8rem; color: var(--accent); font-weight: bold; margin-bottom: 5px; }
+        .action-text { font-size: 0.85rem; }
+
+        .btn-link {
+            display: block;
+            text-align: center;
+            margin-top: 15px;
+            padding: 8px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            text-decoration: none;
+            transition: 0.2s;
+        }
+        .btn-link:hover { background: var(--bg-panel); color: white; border-color: var(--text-secondary); }
+
+        /* -------------------------------------
+           Example Section (Timeline)
+        ------------------------------------- */
+        .example-section {
+            background: var(--bg-panel);
+            border-radius: 16px;
+            padding: 40px;
+            border: 1px solid var(--border);
+        }
+        
+        .timeline {
+            position: relative;
+            margin-top: 30px;
+            padding-left: 30px;
+            border-left: 2px solid var(--border);
+        }
+        
+        .timeline-item {
+            position: relative;
+            margin-bottom: 40px;
+        }
+        
+        .timeline-dot {
+            position: absolute;
+            left: -39px;
+            top: 0;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            border: 3px solid var(--bg-panel);
+        }
+
+        .t-date { font-family: 'JetBrains Mono'; font-size: 0.85rem; opacity: 0.7; margin-bottom: 5px; display: block;}
+        .t-content { background: rgba(0,0,0,0.2); padding: 15px; border-radius: 8px; border: 1px solid var(--border); }
+        .t-title { font-weight: bold; margin-bottom: 5px; color: var(--text-primary); }
+        .t-desc { font-size: 0.9rem; color: var(--text-secondary); }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 40px 0;
+            color: var(--text-secondary);
+            font-size: 0.8rem;
+            border-top: 1px solid var(--border);
+            margin-top: 40px;
+        }
+
+        /* RWD */
+        @media (max-width: 768px) {
+            .hud-inner { flex-direction: column; align-items: flex-start; }
+            .market-summary { width: 100%; justify-content: space-between; }
+            .timeline { padding-left: 20px; }
+            .timeline-dot { left: -29px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="hud-container">
+        <div class="hud-inner">
+            <div class="brand">
+                <i class="fa-solid fa-chart-line"></i>
+                MACRO COMMAND
+            </div>
+            
+            <div class="market-summary">
+                <div class="summary-item">
+                    <span class="summary-label">市場情緒 (Fear & Greed)</span>
+                    <span class="summary-val mono" style="color: var(--neutral);">46 (Neutral)</span>
+                </div>
+                <div class="summary-item">
+                    <span class="summary-label">VIX 恐慌指數</span>
+                    <span class="summary-val mono" style="color: var(--bullish);">13.5 (Low)</span>
+                </div>
+                <div class="summary-item">
+                    <span class="summary-label">美國基準利率</span>
+                    <span class="summary-val mono">5.25 - 5.50%</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        
+        <div class="section-title">
+            <i class="fa-solid fa-radar"></i> 核心監控指標 (Core Indicators)
+        </div>
+
+        <div class="grid cards-grid">
+
+            <article class="card">
+                <div class="card-img-box" style="background-image: url('https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&q=80&w=800');">
+                    <div class="card-img-overlay"></div>
+                    <div class="card-icon"><i class="fa-solid fa-traffic-light" style="color:#fff;"></i></div>
+                </div>
+                <div class="card-body">
+                    <span class="card-tag tag-lag">落後指標</span>
+                    <h3>台灣景氣對策信號</h3>
+                    <p>國發會發布的景氣溫度計。藍燈代表低迷，紅燈代表過熱。</p>
+                    
+                    <div style="display:flex; gap:5px; margin-bottom:15px;">
+                        <span style="flex:1; height:6px; background:var(--accent); border-radius:2px; opacity:0.3;"></span>
+                        <span style="flex:1; height:6px; background:var(--bullish); border-radius:2px; opacity:0.3;"></span>
+                        <span style="flex:1; height:6px; background:var(--bearish); border-radius:2px; opacity:0.3;"></span>
+                    </div>
+
+                    <div class="action-box">
+                        <div class="action-title">💡 實戰策略</div>
+                        <div class="action-text">
+                            <span class="bull-text">● 藍燈 (16分↓)</span>：閉眼買進區，分批佈局。<br>
+                            <span class="bear-text">● 紅燈 (38分↑)</span>：風險極高，現金為王。
+                        </div>
+                    </div>
+                    <a href="https://index.ndc.gov.tw/n/zh_tw" target="_blank" class="btn-link">查看最新燈號 <i class="fa-solid fa-arrow-up-right-from-square"></i></a>
+                </div>
+            </article>
+
+            <article class="card">
+                <div class="card-img-box" style="background-image: url('https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&q=80&w=800');">
+                    <div class="card-img-overlay"></div>
+                    <div class="card-icon"><i class="fa-solid fa-industry" style="color:#fff;"></i></div>
+                </div>
+                <div class="card-body">
+                    <span class="card-tag tag-lead">領先指標</span>
+                    <h3>製造業 PMI</h3>
+                    <p>採購經理人指數。反映企業對未來訂單的看法。比股市反應更快。</p>
+                    
+                    <div class="meter-container">
+                        <div class="meter-marker" style="left: 50%;"></div>
+                        <div class="marker-text" style="left: 50%;">50</div>
+                        <div class="meter-fill" style="width: 48%; background: var(--neutral);"></div>
+                    </div>
+
+                    <div class="action-box">
+                        <div class="action-title">💡 實戰策略</div>
+                        <div class="action-text">
+                            <span class="bull-text">● 低檔突破 50</span>：黃金買點！初升段開始。<br>
+                            <span class="bear-text">● 高檔跌破 50</span>：榮景結束，建議減碼。
+                        </div>
+                    </div>
+                    <a href="https://www.macromicro.me/collections/51/us-pmi" target="_blank" class="btn-link">查看 ISM/PMI <i class="fa-solid fa-arrow-up-right-from-square"></i></a>
+                </div>
+            </article>
+
+            <article class="card">
+                <div class="card-img-box" style="background-image: url('https://images.unsplash.com/photo-1611974765270-ca1258634369?auto=format&fit=crop&q=80&w=800');">
+                    <div class="card-img-overlay"></div>
+                    <div class="card-icon"><i class="fa-solid fa-gauge-high" style="color:#fff;"></i></div>
+                </div>
+                <div class="card-body">
+                    <span class="card-tag tag-risk">情緒指標</span>
+                    <h3>CNN Fear & Greed</h3>
+                    <p>整合動能、波動、期權等數據，判斷市場是瘋狂還是絕望。</p>
+                    
+                    <div class="meter-container">
+                        <div class="meter-fill" style="width: 46%; background: linear-gradient(90deg, var(--bearish), var(--neutral));"></div>
+                    </div>
+
+                    <div class="action-box">
+                        <div class="action-title">💡 實戰策略</div>
+                        <div class="action-text">
+                            <span class="bull-text">● 指數 < 20</span>：極度恐懼，人棄我取。<br>
+                            <span class="bear-text">● 指數 > 80</span>：極度貪婪，居高思危。
+                        </div>
+                    </div>
+                    <a href="https://edition.cnn.com/markets/fear-and-greed" target="_blank" class="btn-link">查看 CNN 指數 <i class="fa-solid fa-arrow-up-right-from-square"></i></a>
+                </div>
+            </article>
+
+            <article class="card">
+                <div class="card-img-box" style="background-image: url('https://images.unsplash.com/photo-1642543492481-44e81e3914a7?auto=format&fit=crop&q=80&w=800');">
+                    <div class="card-img-overlay"></div>
+                    <div class="card-icon"><i class="fa-solid fa-percent" style="color:#fff;"></i></div>
+                </div>
+                <div class="card-body">
+                    <span class="card-tag tag-risk">衰退預警</span>
+                    <h3>殖利率曲線倒掛</h3>
+                    <p>當短債利率高於長債 (負值)，代表資金緊縮，經濟衰退機率大增。</p>
+                    
+                    <div class="action-box">
+                        <div class="action-title">💡 實戰策略</div>
+                        <div class="action-text">
+                            <span class="warn-text">● 發生倒掛</span>：現金水位拉高，減少槓桿。<br>
+                            <span class="bear-text">● 翻正 (回0軸)</span>：通常伴隨崩盤，主跌段訊號。
+                        </div>
+                    </div>
+                    <a href="https://www.macromicro.me/charts/46/bonds-rate" target="_blank" class="btn-link">查看利差圖 <i class="fa-solid fa-arrow-up-right-from-square"></i></a>
+                </div>
+            </article>
+
+            <article class="card">
+                <div class="card-img-box" style="background-image: url('https://images.unsplash.com/photo-1621981386829-9b747d9a9af3?auto=format&fit=crop&q=80&w=800');">
+                    <div class="card-img-overlay"></div>
+                    <div class="card-icon"><i class="fa-solid fa-landmark" style="color:#fff;"></i></div>
+                </div>
+                <div class="card-body">
+                    <span class="card-tag tag-lead">資金源頭</span>
+                    <h3>Fed 利率 & CPI</h3>
+                    <p>全球股市的水龍頭。通膨(CPI)高則升息收水，通膨低則降息放水。</p>
+                    
+                    <div class="action-box">
+                        <div class="action-title">💡 實戰策略</div>
+                        <div class="action-text">
+                            <span class="bear-text">● 升息循環</span>：科技股估值修正 (跌)。<br>
+                            <span class="bull-text">● 停止升息/降息</span>：資金行情啟動，股市易漲。
+                        </div>
+                    </div>
+                    <a href="https://www.macromicro.me/collections/5/us-price-relative/10/cpi" target="_blank" class="btn-link">查看通膨數據 <i class="fa-solid fa-arrow-up-right-from-square"></i></a>
+                </div>
+            </article>
+
+            <article class="card">
+                <div class="card-img-box" style="background-image: url('https://images.unsplash.com/photo-1590283603385-17ffb3a7f29f?auto=format&fit=crop&q=80&w=800');">
+                    <div class="card-img-overlay"></div>
+                    <div class="card-icon"><i class="fa-solid fa-bolt" style="color:#fff;"></i></div>
+                </div>
+                <div class="card-body">
+                    <span class="card-tag tag-risk">避險指標</span>
+                    <h3>VIX 波動率指數</h3>
+                    <p>S&P 500 期權隱含波動率。數值越高，代表市場預期未來30天越震盪。</p>
+                    
+                    <div class="action-box">
+                        <div class="action-title">💡 實戰策略</div>
+                        <div class="action-text">
+                            <span class="bull-text">● VIX < 15</span>：風平浪靜 (但也可能過熱)。<br>
+                            <span class="bear-text">● VIX > 30</span>：恐慌殺盤，搶反彈良機。
+                        </div>
+                    </div>
+                    <a href="https://www.tradingview.com/symbols/TVC-VIX/" target="_blank" class="btn-link">查看 VIX 走勢 <i class="fa-solid fa-arrow-up-right-from-square"></i></a>
+                </div>
+            </article>
+
+            <article class="card">
+                <div class="card-img-box" style="background-image: url('https://images.unsplash.com/photo-1580519542778-33d3306718d7?auto=format&fit=crop&q=80&w=800');">
+                    <div class="card-img-overlay"></div>
+                    <div class="card-icon"><i class="fa-solid fa-dollar-sign" style="color:#fff;"></i></div>
+                </div>
+                <div class="card-body">
+                    <span class="card-tag tag-lead">資金流向</span>
+                    <h3>美元指數 (DXY)</h3>
+                    <p>美元強弱。美元與新興市場股市(含台股)通常呈「反向」關係。</p>
+                    
+                    <div class="action-box">
+                        <div class="action-title">💡 實戰策略</div>
+                        <div class="action-text">
+                            <span class="bear-text">● 美元強升</span>：外資撤離，台股易跌。<br>
+                            <span class="bull-text">● 美元轉弱</span>：資金回流，台股易漲。
+                        </div>
+                    </div>
+                    <a href="https://www.tradingview.com/symbols/TVC-DXY/" target="_blank" class="btn-link">查看 DXY 走勢 <i class="fa-solid fa-arrow-up-right-from-square"></i></a>
+                </div>
+            </article>
+
+            <article class="card">
+                <div class="card-img-box" style="background-image: url('https://images.unsplash.com/photo-1611974765270-ca1258634369?auto=format&fit=crop&q=80&w=800');">
+                    <div class="card-img-overlay"></div>
+                    <div class="card-icon"><i class="fa-solid fa-scale-balanced" style="color:#fff;"></i></div>
+                </div>
+                <div class="card-body">
+                    <span class="card-tag tag-val">估值指標</span>
+                    <h3>大盤本益比 (PE)</h3>
+                    <p>衡量現在股價貴還是便宜。需配合歷史區間（河流圖）觀察。</p>
+                    
+                    <div class="action-box">
+                        <div class="action-title">💡 實戰策略</div>
+                        <div class="action-text">
+                            <span class="bull-text">● 歷史低位</span>：約 10-12 倍，價值投資區。<br>
+                            <span class="bear-text">● 歷史高位</span>：約 18-20 倍以上，追高風險大。
+                        </div>
+                    </div>
+                    <a href="https://www.macromicro.me/charts/133792/shang-shi-da-pan-PE-bi-tai-gu-da-pan-ji-shi-ji-li-shi-ben-yi-bi-zhang-qi-qu-jian-13-bei" target="_blank" class="btn-link">查看本益比圖 <i class="fa-solid fa-arrow-up-right-from-square"></i></a>
+                </div>
+            </article>
+
+        </div>
+
+        <div class="section-title">
+            <i class="fa-solid fa-book-open"></i> 歷史實戰回測 (Case Study)
+        </div>
+
+        <div class="example-section">
+            <h2 style="margin-bottom:10px;">📉 劇本：2022 通膨升息與觸底翻揚</h2>
+            <p style="color:var(--text-secondary); max-width:800px;">
+                這是一個經典的空頭循環範例。我們來看看當這幾個指標同時亮紅燈時，市場發生了什麼事，以及何時出現了買點。
+            </p>
+
+            <div class="timeline">
+                
+                <div class="timeline-item">
+                    <div class="timeline-dot" style="background:var(--bearish); border-color:var(--bearish);"></div>
+                    <span class="t-date">2021 年底 - 2022 初</span>
+                    <div class="t-content">
+                        <div class="t-title">警訊出現：通膨失控</div>
+                        <div class="t-desc">
+                            <ul>
+                                <li><b>CPI 數據：</b>開始飆升至 7% 以上。</li>
+                                <li><b>Fed 態度：</b>從「暫時性通膨」轉為「鷹派升息」。</li>
+                                <li><b>市場反應：</b>殺估值。本益比過高的科技股開始崩跌。</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="timeline-dot" style="background:var(--neutral); border-color:var(--neutral);"></div>
+                    <span class="t-date">2022 年中 (主跌段)</span>
+                    <div class="t-content">
+                        <div class="t-title">全面恐慌：股債雙殺</div>
+                        <div class="t-desc">
+                            <ul>
+                                <li><b>殖利率倒掛：</b>10年-2年利差正式轉負，衰退擔憂加劇。</li>
+                                <li><b>PMI：</b>跌破 50 榮枯線，製造業進入寒冬。</li>
+                                <li><b>台股：</b>外資大提款，從 18000 點一路殺到 12629 點。</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="timeline-dot" style="background:var(--bullish); border-color:var(--bullish);"></div>
+                    <span class="t-date">2022 年 10月 - 11月 (轉折點)</span>
+                    <div class="t-content">
+                        <div class="t-title">落底訊號：甜蜜點浮現</div>
+                        <div class="t-desc">
+                            <ul>
+                                <li><b>CPI 見頂回落：</b>確認通膨不再創新高。</li>
+                                <li><b>景氣燈號：</b>台灣亮出 <span style="color:var(--accent);">藍燈</span> (代表跌無可跌)。</li>
+                                <li><b>Fear & Greed：</b>指數殺到 < 20 (極度恐懼)。</li>
+                                <li><b>結果：</b>最佳買點浮現。隨後股市開啟長達一年的反彈。</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <footer>
+            <p>© 2026 Macro Investment Dashboard. Designed for Rational Investors.</p>
+            <p style="opacity:0.5; margin-top:5px;">Data is for reference only. Investment involves risk.</p>
+        </footer>
+
+    </div>
+
+</body>
+</html>
