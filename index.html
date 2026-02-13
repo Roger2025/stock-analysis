@@ -1,13 +1,16 @@
 <!DOCTYPE html>
 <html lang="zh-Hant">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Macro Command Center | 總經戰情室</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Noto+Sans+TC:wght@400;500;700&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
+
     <style>
         :root {
             --bg-dark: #0f111a;
@@ -15,48 +18,80 @@
             --bg-card: #23273a;
             --text-primary: #e4e7eb;
             --text-secondary: #9aa5b1;
-            
+
             /* 訊號色 */
-            --bullish: #00d1b2; /* 綠/青：多頭 */
-            --bearish: #ff3860; /* 紅：空頭 */
-            --neutral: #ffdd57; /* 黃：中性/警告 */
-            --accent: #3273dc;  /* 藍：資訊 */
-            
+            --bullish: #00d1b2;
+            /* 綠/青：多頭 */
+            --bearish: #ff3860;
+            /* 紅：空頭 */
+            --neutral: #ffdd57;
+            /* 黃：中性/警告 */
+            --accent: #3273dc;
+            /* 藍：資訊 */
+
             --glass: rgba(255, 255, 255, 0.05);
             --border: rgba(255, 255, 255, 0.1);
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
         body {
             background-color: var(--bg-dark);
             color: var(--text-primary);
             font-family: 'Noto Sans TC', sans-serif;
             line-height: 1.6;
+            padding-bottom: 50px;
         }
 
         /* -------------------------------------
            Utility Classes
         ------------------------------------- */
-        .bull-text { color: var(--bullish); font-weight: bold; }
-        .bear-text { color: var(--bearish); font-weight: bold; }
-        .warn-text { color: var(--neutral); font-weight: bold; }
-        .mono { font-family: 'JetBrains Mono', monospace; }
-        .flex-center { display: flex; align-items: center; justify-content: center; }
-        .grid { display: grid; gap: 20px; }
+        .bull-text {
+            color: var(--bullish);
+            font-weight: bold;
+        }
+
+        .bear-text {
+            color: var(--bearish);
+            font-weight: bold;
+        }
+
+        .warn-text {
+            color: var(--neutral);
+            font-weight: bold;
+        }
+
+        .mono {
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .flex-center {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .grid {
+            display: grid;
+            gap: 20px;
+        }
 
         /* -------------------------------------
            Top Dashboard (HUD)
         ------------------------------------- */
         .hud-container {
-            background: linear-gradient(180deg, rgba(26,29,45,0.95) 0%, rgba(15,17,26,0.95) 100%);
+            background: linear-gradient(180deg, rgba(26, 29, 45, 0.98) 0%, rgba(15, 17, 26, 0.95) 100%);
             border-bottom: 1px solid var(--border);
             position: sticky;
             top: 0;
             z-index: 100;
             backdrop-filter: blur(10px);
             padding: 15px 0;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
         }
 
         .hud-inner {
@@ -77,12 +112,16 @@
             align-items: center;
             gap: 10px;
             letter-spacing: 1px;
+            color: white;
         }
-        .brand i { color: var(--accent); }
+
+        .brand i {
+            color: var(--accent);
+        }
 
         .market-summary {
             display: flex;
-            gap: 20px;
+            gap: 25px;
         }
 
         .summary-item {
@@ -90,8 +129,26 @@
             flex-direction: column;
             align-items: flex-end;
         }
-        .summary-label { font-size: 0.75rem; color: var(--text-secondary); text-transform: uppercase; }
-        .summary-val { font-size: 1.1rem; font-weight: 700; font-family: 'JetBrains Mono'; }
+
+        .summary-label {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .summary-val {
+            font-size: 1.1rem;
+            font-weight: 700;
+            font-family: 'JetBrains Mono';
+        }
+
+        #current-date {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            margin-top: 5px;
+            font-family: 'JetBrains Mono';
+        }
 
         /* -------------------------------------
            Main Layout
@@ -102,9 +159,17 @@
             padding: 0 20px;
         }
 
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
         .section-title {
             font-size: 1.8rem;
-            margin-bottom: 20px;
             border-left: 5px solid var(--accent);
             padding-left: 15px;
             display: flex;
@@ -112,11 +177,41 @@
             gap: 10px;
         }
 
+        /* 篩選按鈕 */
+        .filter-controls {
+            display: flex;
+            gap: 10px;
+        }
+
+        .filter-btn {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text-secondary);
+            padding: 6px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+
+        .filter-btn:hover {
+            background: var(--bg-card);
+            color: white;
+            border-color: var(--text-secondary);
+        }
+
+        .filter-btn.active {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: white;
+            box-shadow: 0 0 10px rgba(50, 115, 220, 0.4);
+        }
+
         /* -------------------------------------
            Indicator Cards
         ------------------------------------- */
         .cards-grid {
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
             margin-bottom: 50px;
         }
 
@@ -125,13 +220,16 @@
             border-radius: 12px;
             border: 1px solid var(--border);
             overflow: hidden;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
             position: relative;
+            display: flex;
+            /* 為了 flex 佈局 */
+            flex-direction: column;
         }
 
         .card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
             border-color: var(--accent);
         }
 
@@ -142,16 +240,18 @@
             background-size: cover;
             background-position: center;
         }
+
         .card-img-overlay {
             position: absolute;
             inset: 0;
-            background: linear-gradient(to bottom, rgba(35,39,58,0) 0%, var(--bg-card) 100%);
+            background: linear-gradient(to bottom, rgba(35, 39, 58, 0) 0%, var(--bg-card) 100%);
         }
+
         .card-icon {
             position: absolute;
             top: 15px;
             right: 15px;
-            background: rgba(0,0,0,0.6);
+            background: rgba(0, 0, 0, 0.6);
             padding: 8px;
             border-radius: 50%;
             width: 40px;
@@ -161,9 +261,16 @@
             justify-content: center;
             backdrop-filter: blur(4px);
             border: 1px solid var(--border);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
         }
 
-        .card-body { padding: 20px; }
+        .card-body {
+            padding: 20px;
+            flex: 1;
+            /* 讓內容撐開 */
+            display: flex;
+            flex-direction: column;
+        }
 
         .card-tag {
             display: inline-block;
@@ -172,68 +279,116 @@
             border-radius: 4px;
             margin-bottom: 10px;
             font-weight: 600;
+            align-self: flex-start;
         }
-        .tag-lead { background: rgba(0, 209, 178, 0.15); color: var(--bullish); }
-        .tag-lag { background: rgba(255, 221, 87, 0.15); color: var(--neutral); }
-        .tag-risk { background: rgba(255, 56, 96, 0.15); color: var(--bearish); }
-        .tag-val { background: rgba(50, 115, 220, 0.15); color: var(--accent); }
 
-        .card h3 { font-size: 1.25rem; margin-bottom: 10px; }
-        .card p { color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 15px; }
+        .tag-lead {
+            background: rgba(0, 209, 178, 0.15);
+            color: var(--bullish);
+        }
+
+        .tag-lag {
+            background: rgba(255, 221, 87, 0.15);
+            color: var(--neutral);
+        }
+
+        .tag-risk {
+            background: rgba(255, 56, 96, 0.15);
+            color: var(--bearish);
+        }
+
+        .tag-val {
+            background: rgba(50, 115, 220, 0.15);
+            color: var(--accent);
+        }
+
+        .card h3 {
+            font-size: 1.25rem;
+            margin-bottom: 10px;
+            color: white;
+        }
+
+        .card p {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-bottom: 15px;
+            flex-grow: 1;
+        }
 
         /* 儀表條與分隔線 */
         .meter-container {
-            background: rgba(255,255,255,0.1);
-            height: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            height: 6px;
             border-radius: 4px;
             margin: 15px 0;
             overflow: hidden;
             position: relative;
         }
+
         .meter-fill {
             height: 100%;
             border-radius: 4px;
             position: relative;
         }
+
         .meter-marker {
             position: absolute;
             top: 0;
             bottom: 0;
             width: 2px;
             background: #fff;
-            opacity: 0.5;
+            opacity: 0.7;
             z-index: 10;
         }
+
         .marker-text {
             position: absolute;
-            top: -20px;
+            top: -18px;
             font-size: 0.7rem;
             color: var(--text-secondary);
             transform: translateX(-50%);
+            font-family: 'JetBrains Mono';
         }
 
         .action-box {
-            background: rgba(0,0,0,0.2);
+            background: rgba(0, 0, 0, 0.2);
             padding: 12px;
             border-radius: 8px;
             border-left: 3px solid var(--accent);
+            margin-bottom: 15px;
         }
-        .action-title { font-size: 0.8rem; color: var(--accent); font-weight: bold; margin-bottom: 5px; }
-        .action-text { font-size: 0.85rem; }
+
+        .action-title {
+            font-size: 0.8rem;
+            color: var(--accent);
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .action-text {
+            font-size: 0.85rem;
+            line-height: 1.5;
+        }
 
         .btn-link {
             display: block;
             text-align: center;
-            margin-top: 15px;
-            padding: 8px;
+            padding: 10px;
             border: 1px solid var(--border);
             border-radius: 6px;
             color: var(--text-secondary);
             font-size: 0.85rem;
             text-decoration: none;
             transition: 0.2s;
+            background: rgba(255, 255, 255, 0.02);
         }
-        .btn-link:hover { background: var(--bg-panel); color: white; border-color: var(--text-secondary); }
+
+        .btn-link:hover {
+            background: var(--bg-panel);
+            color: white;
+            border-color: var(--text-secondary);
+            transform: translateY(-2px);
+        }
 
         /* -------------------------------------
            Example Section (Timeline)
@@ -243,20 +398,22 @@
             border-radius: 16px;
             padding: 40px;
             border: 1px solid var(--border);
+            position: relative;
+            overflow: hidden;
         }
-        
+
         .timeline {
             position: relative;
             margin-top: 30px;
             padding-left: 30px;
             border-left: 2px solid var(--border);
         }
-        
+
         .timeline-item {
             position: relative;
             margin-bottom: 40px;
         }
-        
+
         .timeline-dot {
             position: absolute;
             left: -39px;
@@ -265,12 +422,45 @@
             height: 16px;
             border-radius: 50%;
             border: 3px solid var(--bg-panel);
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
         }
 
-        .t-date { font-family: 'JetBrains Mono'; font-size: 0.85rem; opacity: 0.7; margin-bottom: 5px; display: block;}
-        .t-content { background: rgba(0,0,0,0.2); padding: 15px; border-radius: 8px; border: 1px solid var(--border); }
-        .t-title { font-weight: bold; margin-bottom: 5px; color: var(--text-primary); }
-        .t-desc { font-size: 0.9rem; color: var(--text-secondary); }
+        .t-date {
+            font-family: 'JetBrains Mono';
+            font-size: 0.85rem;
+            opacity: 0.7;
+            margin-bottom: 5px;
+            display: block;
+        }
+
+        .t-content {
+            background: rgba(0, 0, 0, 0.2);
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            transition: 0.3s;
+        }
+
+        .t-content:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .t-title {
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: var(--text-primary);
+            font-size: 1.1rem;
+        }
+
+        .t-desc {
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+        }
+
+        .t-desc ul {
+            padding-left: 20px;
+            margin-top: 5px;
+        }
 
         /* Footer */
         footer {
@@ -284,25 +474,60 @@
 
         /* RWD */
         @media (max-width: 768px) {
-            .hud-inner { flex-direction: column; align-items: flex-start; }
-            .market-summary { width: 100%; justify-content: space-between; }
-            .timeline { padding-left: 20px; }
-            .timeline-dot { left: -29px; }
+            .hud-inner {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 20px;
+            }
+
+            .market-summary {
+                width: 100%;
+                justify-content: space-between;
+                gap: 10px;
+            }
+
+            .section-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .filter-controls {
+                width: 100%;
+                overflow-x: auto;
+                padding-bottom: 5px;
+            }
+
+            .filter-btn {
+                white-space: nowrap;
+            }
+
+            .timeline {
+                padding-left: 20px;
+            }
+
+            .timeline-dot {
+                left: -29px;
+            }
+
+            .summary-item {
+                align-items: flex-start;
+            }
         }
     </style>
 </head>
+
 <body>
 
-    <div class="hud-container">
+    <header class="hud-container">
         <div class="hud-inner">
             <div class="brand">
                 <i class="fa-solid fa-chart-line"></i>
                 MACRO COMMAND
             </div>
-            
+
             <div class="market-summary">
                 <div class="summary-item">
-                    <span class="summary-label">市場情緒 (Fear & Greed)</span>
+                    <span class="summary-label">市場情緒 (F&G)</span>
                     <span class="summary-val mono" style="color: var(--neutral);">46 (Neutral)</span>
                 </div>
                 <div class="summary-item">
@@ -313,20 +538,33 @@
                     <span class="summary-label">美國基準利率</span>
                     <span class="summary-val mono">5.25 - 5.50%</span>
                 </div>
+                <div class="summary-item" style="display:none;" id="date-display-box">
+                    <span class="summary-label">DATE</span>
+                    <span id="current-date" class="mono">--/--/--</span>
+                </div>
             </div>
         </div>
-    </div>
+    </header>
 
-    <div class="container">
-        
-        <div class="section-title">
-            <i class="fa-solid fa-radar"></i> 核心監控指標 (Core Indicators)
+    <main class="container">
+
+        <div class="section-header">
+            <div class="section-title">
+                <i class="fa-solid fa-radar"></i> 核心監控指標
+            </div>
+            <div class="filter-controls">
+                <button class="filter-btn active" onclick="filterCards('all')">全部</button>
+                <button class="filter-btn" onclick="filterCards('trend')">趨勢 (Trend)</button>
+                <button class="filter-btn" onclick="filterCards('risk')">風險 (Risk)</button>
+                <button class="filter-btn" onclick="filterCards('capital')">資金 (Capital)</button>
+            </div>
         </div>
 
         <div class="grid cards-grid">
 
-            <article class="card">
-                <div class="card-img-box" style="background-image: url('https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&q=80&w=800');">
+            <article class="card" data-category="trend">
+                <div class="card-img-box"
+                    style="background-image: url('https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&q=80&w=800');">
                     <div class="card-img-overlay"></div>
                     <div class="card-icon"><i class="fa-solid fa-traffic-light" style="color:#fff;"></i></div>
                 </div>
@@ -334,11 +572,14 @@
                     <span class="card-tag tag-lag">落後指標</span>
                     <h3>台灣景氣對策信號</h3>
                     <p>國發會發布的景氣溫度計。藍燈代表低迷，紅燈代表過熱。</p>
-                    
+
                     <div style="display:flex; gap:5px; margin-bottom:15px;">
-                        <span style="flex:1; height:6px; background:var(--accent); border-radius:2px; opacity:0.3;"></span>
-                        <span style="flex:1; height:6px; background:var(--bullish); border-radius:2px; opacity:0.3;"></span>
-                        <span style="flex:1; height:6px; background:var(--bearish); border-radius:2px; opacity:0.3;"></span>
+                        <span
+                            style="flex:1; height:6px; background:var(--accent); border-radius:2px; opacity:0.3;"></span>
+                        <span
+                            style="flex:1; height:6px; background:var(--bullish); border-radius:2px; opacity:0.3;"></span>
+                        <span
+                            style="flex:1; height:6px; background:var(--bearish); border-radius:2px; opacity:0.3;"></span>
                     </div>
 
                     <div class="action-box">
@@ -348,12 +589,14 @@
                             <span class="bear-text">● 紅燈 (38分↑)</span>：風險極高，現金為王。
                         </div>
                     </div>
-                    <a href="https://index.ndc.gov.tw/n/zh_tw" target="_blank" class="btn-link">查看最新燈號 <i class="fa-solid fa-arrow-up-right-from-square"></i></a>
+                    <a href="https://index.ndc.gov.tw/n/zh_tw" target="_blank" class="btn-link">查看最新燈號 <i
+                            class="fa-solid fa-arrow-up-right-from-square"></i></a>
                 </div>
             </article>
 
-            <article class="card">
-                <div class="card-img-box" style="background-image: url('https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&q=80&w=800');">
+            <article class="card" data-category="trend">
+                <div class="card-img-box"
+                    style="background-image: url('https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&q=80&w=800');">
                     <div class="card-img-overlay"></div>
                     <div class="card-icon"><i class="fa-solid fa-industry" style="color:#fff;"></i></div>
                 </div>
@@ -361,7 +604,7 @@
                     <span class="card-tag tag-lead">領先指標</span>
                     <h3>製造業 PMI</h3>
                     <p>採購經理人指數。反映企業對未來訂單的看法。比股市反應更快。</p>
-                    
+
                     <div class="meter-container">
                         <div class="meter-marker" style="left: 50%;"></div>
                         <div class="marker-text" style="left: 50%;">50</div>
@@ -375,12 +618,14 @@
                             <span class="bear-text">● 高檔跌破 50</span>：榮景結束，建議減碼。
                         </div>
                     </div>
-                    <a href="https://www.macromicro.me/collections/51/us-pmi" target="_blank" class="btn-link">查看 ISM/PMI <i class="fa-solid fa-arrow-up-right-from-square"></i></a>
+                    <a href="https://index.ndc.gov.tw/n/zh_tw/data/PMI#/" target="_blank" class="btn-link">查看中經院 PMI <i
+                            class="fa-solid fa-arrow-up-right-from-square"></i></a>
                 </div>
             </article>
 
-            <article class="card">
-                <div class="card-img-box" style="background-image: url('https://images.unsplash.com/photo-1611974765270-ca1258634369?auto=format&fit=crop&q=80&w=800');">
+            <article class="card" data-category="risk">
+                <div class="card-img-box"
+                    style="background-image: url('https://images.unsplash.com/photo-1611974765270-ca1258634369?auto=format&fit=crop&q=80&w=800');">
                     <div class="card-img-overlay"></div>
                     <div class="card-icon"><i class="fa-solid fa-gauge-high" style="color:#fff;"></i></div>
                 </div>
@@ -388,24 +633,28 @@
                     <span class="card-tag tag-risk">情緒指標</span>
                     <h3>CNN Fear & Greed</h3>
                     <p>整合動能、波動、期權等數據，判斷市場是瘋狂還是絕望。</p>
-                    
+
                     <div class="meter-container">
-                        <div class="meter-fill" style="width: 46%; background: linear-gradient(90deg, var(--bearish), var(--neutral));"></div>
+                        <div class="meter-fill"
+                            style="width: 46%; background: linear-gradient(90deg, var(--bearish), var(--neutral));">
+                        </div>
                     </div>
 
                     <div class="action-box">
                         <div class="action-title">💡 實戰策略</div>
                         <div class="action-text">
                             <span class="bull-text">● 指數 < 20</span>：極度恐懼，人棄我取。<br>
-                            <span class="bear-text">● 指數 > 80</span>：極度貪婪，居高思危。
+                                    <span class="bear-text">● 指數 > 80</span>：極度貪婪，居高思危。
                         </div>
                     </div>
-                    <a href="https://edition.cnn.com/markets/fear-and-greed" target="_blank" class="btn-link">查看 CNN 指數 <i class="fa-solid fa-arrow-up-right-from-square"></i></a>
+                    <a href="https://edition.cnn.com/markets/fear-and-greed" target="_blank" class="btn-link">查看 CNN 指數
+                        <i class="fa-solid fa-arrow-up-right-from-square"></i></a>
                 </div>
             </article>
 
-            <article class="card">
-                <div class="card-img-box" style="background-image: url('https://images.unsplash.com/photo-1642543492481-44e81e3914a7?auto=format&fit=crop&q=80&w=800');">
+            <article class="card" data-category="risk">
+                <div class="card-img-box"
+                    style="background-image: url('https://images.unsplash.com/photo-1642543492481-44e81e3914a7?auto=format&fit=crop&q=80&w=800');">
                     <div class="card-img-overlay"></div>
                     <div class="card-icon"><i class="fa-solid fa-percent" style="color:#fff;"></i></div>
                 </div>
@@ -413,7 +662,7 @@
                     <span class="card-tag tag-risk">衰退預警</span>
                     <h3>殖利率曲線倒掛</h3>
                     <p>當短債利率高於長債 (負值)，代表資金緊縮，經濟衰退機率大增。</p>
-                    
+
                     <div class="action-box">
                         <div class="action-title">💡 實戰策略</div>
                         <div class="action-text">
@@ -421,12 +670,14 @@
                             <span class="bear-text">● 翻正 (回0軸)</span>：通常伴隨崩盤，主跌段訊號。
                         </div>
                     </div>
-                    <a href="https://www.macromicro.me/charts/46/bonds-rate" target="_blank" class="btn-link">查看利差圖 <i class="fa-solid fa-arrow-up-right-from-square"></i></a>
+                    <a href="https://www.macromicro.me/charts/46/bonds-rate" target="_blank" class="btn-link">查看利差圖 <i
+                            class="fa-solid fa-arrow-up-right-from-square"></i></a>
                 </div>
             </article>
 
-            <article class="card">
-                <div class="card-img-box" style="background-image: url('https://images.unsplash.com/photo-1621981386829-9b747d9a9af3?auto=format&fit=crop&q=80&w=800');">
+            <article class="card" data-category="capital">
+                <div class="card-img-box"
+                    style="background-image: url('https://images.unsplash.com/photo-1621981386829-9b747d9a9af3?auto=format&fit=crop&q=80&w=800');">
                     <div class="card-img-overlay"></div>
                     <div class="card-icon"><i class="fa-solid fa-landmark" style="color:#fff;"></i></div>
                 </div>
@@ -434,7 +685,7 @@
                     <span class="card-tag tag-lead">資金源頭</span>
                     <h3>Fed 利率 & CPI</h3>
                     <p>全球股市的水龍頭。通膨(CPI)高則升息收水，通膨低則降息放水。</p>
-                    
+
                     <div class="action-box">
                         <div class="action-title">💡 實戰策略</div>
                         <div class="action-text">
@@ -442,12 +693,14 @@
                             <span class="bull-text">● 停止升息/降息</span>：資金行情啟動，股市易漲。
                         </div>
                     </div>
-                    <a href="https://www.macromicro.me/collections/5/us-price-relative/10/cpi" target="_blank" class="btn-link">查看通膨數據 <i class="fa-solid fa-arrow-up-right-from-square"></i></a>
+                    <a href="https://www.macromicro.me/collections/5/us-price-relative/10/cpi" target="_blank"
+                        class="btn-link">查看通膨數據 <i class="fa-solid fa-arrow-up-right-from-square"></i></a>
                 </div>
             </article>
 
-            <article class="card">
-                <div class="card-img-box" style="background-image: url('https://images.unsplash.com/photo-1590283603385-17ffb3a7f29f?auto=format&fit=crop&q=80&w=800');">
+            <article class="card" data-category="risk">
+                <div class="card-img-box"
+                    style="background-image: url('https://images.unsplash.com/photo-1590283603385-17ffb3a7f29f?auto=format&fit=crop&q=80&w=800');">
                     <div class="card-img-overlay"></div>
                     <div class="card-icon"><i class="fa-solid fa-bolt" style="color:#fff;"></i></div>
                 </div>
@@ -455,20 +708,22 @@
                     <span class="card-tag tag-risk">避險指標</span>
                     <h3>VIX 波動率指數</h3>
                     <p>S&P 500 期權隱含波動率。數值越高，代表市場預期未來30天越震盪。</p>
-                    
+
                     <div class="action-box">
                         <div class="action-title">💡 實戰策略</div>
                         <div class="action-text">
                             <span class="bull-text">● VIX < 15</span>：風平浪靜 (但也可能過熱)。<br>
-                            <span class="bear-text">● VIX > 30</span>：恐慌殺盤，搶反彈良機。
+                                    <span class="bear-text">● VIX > 30</span>：恐慌殺盤，搶反彈良機。
                         </div>
                     </div>
-                    <a href="https://www.tradingview.com/symbols/TVC-VIX/" target="_blank" class="btn-link">查看 VIX 走勢 <i class="fa-solid fa-arrow-up-right-from-square"></i></a>
+                    <a href="https://www.tradingview.com/symbols/TVC-VIX/" target="_blank" class="btn-link">查看 VIX 走勢 <i
+                            class="fa-solid fa-arrow-up-right-from-square"></i></a>
                 </div>
             </article>
 
-            <article class="card">
-                <div class="card-img-box" style="background-image: url('https://images.unsplash.com/photo-1580519542778-33d3306718d7?auto=format&fit=crop&q=80&w=800');">
+            <article class="card" data-category="capital">
+                <div class="card-img-box"
+                    style="background-image: url('https://images.unsplash.com/photo-1580519542778-33d3306718d7?auto=format&fit=crop&q=80&w=800');">
                     <div class="card-img-overlay"></div>
                     <div class="card-icon"><i class="fa-solid fa-dollar-sign" style="color:#fff;"></i></div>
                 </div>
@@ -476,7 +731,7 @@
                     <span class="card-tag tag-lead">資金流向</span>
                     <h3>美元指數 (DXY)</h3>
                     <p>美元強弱。美元與新興市場股市(含台股)通常呈「反向」關係。</p>
-                    
+
                     <div class="action-box">
                         <div class="action-title">💡 實戰策略</div>
                         <div class="action-text">
@@ -484,12 +739,14 @@
                             <span class="bull-text">● 美元轉弱</span>：資金回流，台股易漲。
                         </div>
                     </div>
-                    <a href="https://www.tradingview.com/symbols/TVC-DXY/" target="_blank" class="btn-link">查看 DXY 走勢 <i class="fa-solid fa-arrow-up-right-from-square"></i></a>
+                    <a href="https://www.tradingview.com/symbols/TVC-DXY/" target="_blank" class="btn-link">查看 DXY 走勢 <i
+                            class="fa-solid fa-arrow-up-right-from-square"></i></a>
                 </div>
             </article>
 
-            <article class="card">
-                <div class="card-img-box" style="background-image: url('https://images.unsplash.com/photo-1611974765270-ca1258634369?auto=format&fit=crop&q=80&w=800');">
+            <article class="card" data-category="trend">
+                <div class="card-img-box"
+                    style="background-image: url('https://images.unsplash.com/photo-1611974765270-ca1258634369?auto=format&fit=crop&q=80&w=800');">
                     <div class="card-img-overlay"></div>
                     <div class="card-icon"><i class="fa-solid fa-scale-balanced" style="color:#fff;"></i></div>
                 </div>
@@ -497,7 +754,7 @@
                     <span class="card-tag tag-val">估值指標</span>
                     <h3>大盤本益比 (PE)</h3>
                     <p>衡量現在股價貴還是便宜。需配合歷史區間（河流圖）觀察。</p>
-                    
+
                     <div class="action-box">
                         <div class="action-title">💡 實戰策略</div>
                         <div class="action-text">
@@ -505,7 +762,9 @@
                             <span class="bear-text">● 歷史高位</span>：約 18-20 倍以上，追高風險大。
                         </div>
                     </div>
-                    <a href="https://www.macromicro.me/charts/133792/shang-shi-da-pan-PE-bi-tai-gu-da-pan-ji-shi-ji-li-shi-ben-yi-bi-zhang-qi-qu-jian-13-bei" target="_blank" class="btn-link">查看本益比圖 <i class="fa-solid fa-arrow-up-right-from-square"></i></a>
+                    <a href="https://www.macromicro.me/charts/133792/shang-shi-da-pan-PE-bi-tai-gu-da-pan-ji-shi-ji-li-shi-ben-yi-bi-zhang-qi-qu-jian-13-bei"
+                        target="_blank" class="btn-link">查看本益比圖 <i
+                            class="fa-solid fa-arrow-up-right-from-square"></i></a>
                 </div>
             </article>
 
@@ -515,14 +774,14 @@
             <i class="fa-solid fa-book-open"></i> 歷史實戰回測 (Case Study)
         </div>
 
-        <div class="example-section">
+        <section class="example-section">
             <h2 style="margin-bottom:10px;">📉 劇本：2022 通膨升息與觸底翻揚</h2>
             <p style="color:var(--text-secondary); max-width:800px;">
                 這是一個經典的空頭循環範例。我們來看看當這幾個指標同時亮紅燈時，市場發生了什麼事，以及何時出現了買點。
             </p>
 
             <div class="timeline">
-                
+
                 <div class="timeline-item">
                     <div class="timeline-dot" style="background:var(--bearish); border-color:var(--bearish);"></div>
                     <span class="t-date">2021 年底 - 2022 初</span>
@@ -570,14 +829,48 @@
                 </div>
 
             </div>
-        </div>
+        </section>
 
         <footer>
             <p>© 2026 Macro Investment Dashboard. Designed for Rational Investors.</p>
             <p style="opacity:0.5; margin-top:5px;">Data is for reference only. Investment involves risk.</p>
         </footer>
 
-    </div>
+    </main>
 
+    <script>
+        // 1. 動態日期顯示
+        const dateBox = document.getElementById('date-display-box');
+        const dateText = document.getElementById('current-date');
+
+        // 強制顯示日期區塊 (因為原本 HTML 預設 hidden)
+        dateBox.style.display = 'flex';
+
+        const today = new Date();
+        const yyyy = today.getFullYear();
+        const mm = String(today.getMonth() + 1).padStart(2, '0');
+        const dd = String(today.getDate()).padStart(2, '0');
+        dateText.textContent = `${yyyy}/${mm}/${dd}`;
+
+        // 2. 卡片篩選功能
+        function filterCards(category) {
+            const cards = document.querySelectorAll('.card');
+            const buttons = document.querySelectorAll('.filter-btn');
+
+            // 更新按鈕狀態
+            buttons.forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+
+            // 執行篩選
+            cards.forEach(card => {
+                if (category === 'all' || card.getAttribute('data-category') === category) {
+                    card.style.display = 'flex';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+    </script>
 </body>
+
 </html>
