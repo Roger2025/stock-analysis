@@ -3,7 +3,7 @@
 > **「連結數據節點，洞察市場趨勢。」**
 > 專為理性投資人設計的總體經濟監控儀表板。
 
-![Macro Study Group Preview](dashboard_preview.jpg)
+![Macro Study Group Preview](pic/dashboard_preview.jpg)
 
 ## 📖 專案簡介 (Introduction)
 
