@@ -248,6 +248,9 @@
             /* 使用漸層文字 */
             background: linear-gradient(135deg, #fff 30%, var(--accent-blue) 100%);
             -webkit-background-clip: text;
+            /* 舊的寫法 (VS Code 警告這行) */
+            background-clip: text;
+            /* ★ 加上這一行標準寫法！ */
             -webkit-text-fill-color: transparent;
             letter-spacing: 4px;
             text-shadow: 0 10px 30px rgba(79, 172, 254, 0.3);
