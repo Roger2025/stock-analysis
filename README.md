@@ -3,6 +3,9 @@
 > **「連結數據節點，洞察市場趨勢。」**
 > 專為理性投資人設計的總體經濟監控儀表板。
 
+## 🌐 在線預覽 (Live Demo)
+👉 **點擊查看實戰頁面：[https://roger2025.github.io/stock-analysis/](https://roger2025.github.io/stock-analysis/)**
+
 ![Macro Study Group Preview](pic/dashboard_preview.jpg)
 
 ## 📖 專案簡介 (Introduction)
