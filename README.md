@@ -6,7 +6,7 @@
 ## 🌐 在線預覽 (Live Demo)
 👉 **點擊查看實戰頁面：[https://roger2025.github.io/stock-analysis/](https://roger2025.github.io/stock-analysis/)**
 
-![Macro Study Group Preview](pic/dashboard_preview.jpg)
+![Macro Study Group Preview](dashboard_preview.jpg)
 
 ## 📖 專案簡介 (Introduction)
 
