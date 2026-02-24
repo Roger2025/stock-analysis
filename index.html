@@ -5,6 +5,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Macro Study Group | 總經戰情研討室</title>
+
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="總經戰情">
+    <link rel="apple-touch-icon" href="icon.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link
         href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Noto+Sans+TC:wght@300;400;500;700&display=swap"
@@ -42,6 +47,95 @@
             font-family: 'Noto Sans TC', sans-serif;
             line-height: 1.6;
             overflow-x: hidden;
+        }
+
+        /* -------------------------------------
+           科技風啟動畫面 (Splash Screen)
+        ------------------------------------- */
+        #splash-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--bg-dark);
+            z-index: 9999;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: opacity 0.4s ease-out, visibility 0.4s ease-out;
+            /* 0.4秒極速淡出 */
+        }
+
+        .splash-content {
+            text-align: center;
+        }
+
+        .splash-logo {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.8rem;
+            color: #fff;
+            letter-spacing: 2px;
+            margin-bottom: 25px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+            text-shadow: 0 0 15px rgba(79, 172, 254, 0.4);
+        }
+
+        .splash-logo i {
+            font-size: 3.5rem;
+            color: var(--accent-blue);
+            animation: floatIcon 2s ease-in-out infinite;
+        }
+
+        .splash-loader {
+            width: 120px;
+            height: 2px;
+            background: rgba(255, 255, 255, 0.1);
+            margin: 0 auto;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .splash-loader::after {
+            content: '';
+            position: absolute;
+            left: -50px;
+            width: 50px;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, var(--accent-blue), transparent);
+            animation: techScan 1s infinite linear;
+        }
+
+        .splash-hidden {
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        @keyframes techScan {
+            0% {
+                left: -50px;
+            }
+
+            100% {
+                left: 100%;
+            }
+        }
+
+        @keyframes floatIcon {
+            0% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-8px);
+            }
+
+            100% {
+                transform: translateY(0);
+            }
         }
 
         /* -------------------------------------
@@ -245,12 +339,9 @@
             font-size: 3.5rem;
             font-weight: 800;
             margin-bottom: 15px;
-            /* 使用漸層文字 */
             background: linear-gradient(135deg, #fff 30%, var(--accent-blue) 100%);
             -webkit-background-clip: text;
-            /* 舊的寫法 (VS Code 警告這行) */
             background-clip: text;
-            /* ★ 加上這一行標準寫法！ */
             -webkit-text-fill-color: transparent;
             letter-spacing: 4px;
             text-shadow: 0 10px 30px rgba(79, 172, 254, 0.3);
@@ -381,7 +472,6 @@
             letter-spacing: 0.5px;
         }
 
-        /* 重新定義 Badge 顏色以配合新主題 */
         .badge-trend {
             background: rgba(79, 172, 254, 0.15);
             color: var(--accent-blue);
@@ -409,7 +499,6 @@
         .card-img-container {
             width: 100%;
             height: 240px;
-            /* 稍微加高 */
             background-color: rgba(10, 11, 20, 0.5);
             overflow: hidden;
             position: relative;
@@ -437,7 +526,6 @@
             gap: 18px;
         }
 
-        /* 數據解讀區塊 */
         .insight-box {
             background: rgba(79, 172, 254, 0.08);
             border-radius: 10px;
@@ -456,7 +544,6 @@
             font-size: 1rem;
         }
 
-        /* 實戰策略區塊 */
         .strategy-box {
             background: rgba(255, 255, 255, 0.03);
             border: 1px solid var(--border-color);
@@ -583,6 +670,15 @@
 
 <body>
 
+    <div id="splash-screen">
+        <div class="splash-content">
+            <div class="splash-logo">
+                <i class="fa-solid fa-book-open-reader"></i>
+                MACRO STUDY
+            </div>
+            <div class="splash-loader"></div>
+        </div>
+    </div>
     <div class="study-bg">
         <div class="constellation-overlay"></div>
         <div class="particle"></div>
@@ -796,7 +892,7 @@
                         <div class="strategy-title"><i class="fa-solid fa-chess-knight"></i> 實戰策略</div>
                         <ul class="strategy-list">
                             <li><span class="dot dot-g"></span> VIX 爆噴 (>30)：美股落底訊號，找買點。</li>
-                            <li><span class="dot dot-y"></span> VIX 長期低檔 (<15)：市場過度樂觀，小心回檔。< /li>
+                            <li><span class="dot dot-y"></span> VIX 長期低檔 (&lt;15)：市場過度樂觀，小心回檔。</li>
                         </ul>
                     </div>
                     <a href="https://www.macromicro.me/charts/53216/kong-huang-zhi-shu-VS-SP500" target="_blank"
@@ -813,9 +909,7 @@
                     <i class="fa-solid fa-chart-line fa-lg" style="color:var(--text-secondary)"></i>
                 </div>
                 <div class="card-img-container">
-
                     <img src="pic/VIX波動率指數vs台股加權指數.png" alt="VIX vs TWSE">
-
                 </div>
                 <div class="card-body">
                     <div class="insight-box">
@@ -910,7 +1004,7 @@
                         <div class="strategy-title"><i class="fa-solid fa-chess-knight"></i> 實戰策略</div>
                         <ul class="strategy-list">
                             <li><span class="dot dot-g"></span> 數值翻正 (>0)：需求大於供給，啟動補庫存 (買)。</li>
-                            <li><span class="dot dot-r"></span> 數值轉負 (<0)：供給過剩，進入去庫存 (避)。</li>
+                            <li><span class="dot dot-r"></span> 數值轉負 (&lt;0)：供給過剩，進入去庫存 (避)。</li>
                         </ul>
                     </div>
                     <a href="https://www.macromicro.me/charts/5479/tw-backlog-of-orders-customers-invertories"
@@ -927,6 +1021,13 @@
     </footer>
 
     <script>
+        // 啟動畫面控制：載入完成後極速閃現 (0.4秒)
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                document.getElementById('splash-screen').classList.add('splash-hidden');
+            }, 400);
+        });
+
         // 設定日期
         const today = new Date();
         document.getElementById('current-date').textContent = today.toISOString().split('T')[0].replace(/-/g, '/');
